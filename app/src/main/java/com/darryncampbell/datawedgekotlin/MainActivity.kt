@@ -1,9 +1,10 @@
 package com.darryncampbell.datawedgekotlin
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 
@@ -22,16 +23,16 @@ import java.io.ObjectOutputStream
 
 class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
 
-    private var scans: ArrayList<Scan> = arrayListOf();
-    var adapter = ScanAdapter(this, scans)
-    private val dwInterface = DWInterface();
+    private var scans: ArrayList<Scan> = arrayListOf()
+    private var adapter = ScanAdapter(this, scans)
+    private val dwInterface = DWInterface()
     private val receiver = DWReceiver()
-    private var initialized = false;
+    private var initialized = false
     private var version65OrOver = false
 
     companion object {
         const val PROFILE_NAME = "DataWedgeKotlinDemo"
-        const val PROFILE_INTENT_ACTION = "com.darryncampbell.datawedgekotlin.SCAN"
+        const val PROFILE_INTENT_ACTION = "com.darryncampbell.appactionsdemo.SCAN"
         const val PROFILE_INTENT_START_ACTIVITY = "0"
         const val SCAN_HISTORY_FILE_NAME = "ScanHistory"
     }
@@ -51,17 +52,18 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
         registerReceiver(receiver, intentFilter)
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         //  DataWedge intents received here
         if (intent.hasExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)) {
             //  Handle scan intent received from DataWedge, add it to the list of scans
-            var scanData = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)
-            var symbology = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE)
-            var date = Calendar.getInstance().getTime()
-            var df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-            var dateTimeString = df.format(date)
-            var currentScan = Scan(scanData, symbology, dateTimeString);
+            val scanData = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)
+            val symbology = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE)
+            val date = Calendar.getInstance().time
+            val df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+            val dateTimeString = df.format(date)
+            val currentScan = Scan(scanData, symbology, dateTimeString)
             scans.add(0, currentScan)
         }
         adapter.notifyDataSetChanged()
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
             R.id.action_settings -> {
                 val settingsIntent = Intent(this, ConfigurationActivity::class.java)
                 settingsIntent.putExtra(ConfigurationActivity.SETTINGS_KEY_VERSION, version65OrOver)
-                startActivity(settingsIntent);
+                startActivity(settingsIntent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -118,7 +120,7 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
 
     override fun update(p0: Observable?, p1: Any?) {
         //  Invoked in response to the DWReceiver broadcast receiver
-        var receivedIntent = p1 as Intent
+        val receivedIntent = p1 as Intent
         //  This activity will only receive DataWedge version since that is all we ask for, the
         //  configuration activity is responsible for other return values such as enumerated scanners
         //  If the version is <= 6.5 we reduce the amount of configuration available.  There are
@@ -126,8 +128,8 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
         //  configuration) but to keep it simple, we just define a minimum of 6.5 for configuration
         //  functionality
         if (receivedIntent.hasExtra(DWInterface.DATAWEDGE_RETURN_VERSION)) {
-            val version = receivedIntent.getBundleExtra(DWInterface.DATAWEDGE_RETURN_VERSION);
-            val dataWedgeVersion = version?.getString(DWInterface.DATAWEDGE_RETURN_VERSION_DATAWEDGE);
+            val version = receivedIntent.getBundleExtra(DWInterface.DATAWEDGE_RETURN_VERSION)
+            val dataWedgeVersion = version?.getString(DWInterface.DATAWEDGE_RETURN_VERSION_DATAWEDGE)
             if (dataWedgeVersion != null && dataWedgeVersion >= "6.5" && !version65OrOver) {
                 version65OrOver = true
                 createDataWedgeProfile()
@@ -176,7 +178,7 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
             val fileOut = applicationContext.openFileOutput(SCAN_HISTORY_FILE_NAME, Activity.MODE_PRIVATE)
             objectOut = ObjectOutputStream(fileOut)
             objectOut.writeObject(scans)
-            fileOut.getFD().sync()
+            fileOut.fd.sync()
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
@@ -225,6 +227,7 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(button: View?, event: MotionEvent?): Boolean {
         when (button?.id) {
             R.id.btnScan -> {
