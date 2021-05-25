@@ -29,3 +29,6 @@ Other apps:
 
 Notes:
 - Actions.xml is for production apps (current handler for Google Assistant), shortcuts.xml is for the new App Shortcuts feature and is currently beta.
+- Install assistant (not required)
+- Put app in Play Store
+- Signed into my Google account (same as Play Store account)
