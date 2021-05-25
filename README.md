@@ -11,6 +11,7 @@ Demo to show how to use App Actions on Zebra Mobile Computers
 - https://developers.google.com/assistant/app/reference/built-in-intents
 - https://developers.google.com/assistant/app/reference/built-in-intents/bii-index
 - https://developers.google.com/assistant/app/reference/built-in-intents/common/get-barcode
+- https://developers.google.com/assistant/app/legacy/action-schema
 - https://developers.google.com/assistant/app/test-tool
 
 
@@ -25,3 +26,6 @@ Other apps:
 - https://github.com/darryncampbell/RetailAssistant
 - https://developer.zebra.com/blog/using-dialogflow-zebra-mobile-devices
 - https://github.com/darryncampbell/AndroidV2DialogFlow
+
+Notes:
+- Actions.xml is for production apps (current handler for Google Assistant), shortcuts.xml is for the new App Shortcuts feature and is currently beta.

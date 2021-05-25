@@ -1,4 +1,4 @@
-package com.darryncampbell.datawedgekotlin
+package com.darryncampbell.appactionsdemo
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

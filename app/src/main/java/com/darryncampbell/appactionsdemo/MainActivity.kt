@@ -1,28 +1,29 @@
-package com.darryncampbell.datawedgekotlin
+package com.darryncampbell.appactionsdemo
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
-import java.text.SimpleDateFormat
-import java.util.*
-import android.app.Activity
 import android.view.MotionEvent
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
 
+    private val LOG_TAG: String = "AppActionsDemo"
     private var scans: ArrayList<Scan> = arrayListOf()
     private var adapter = ScanAdapter(this, scans)
     private val dwInterface = DWInterface()
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
     private var version65OrOver = false
 
     companion object {
-        const val PROFILE_NAME = "DataWedgeKotlinDemo"
+        const val PROFILE_NAME = "DataWedgeAppDemo"
         const val PROFILE_INTENT_ACTION = "com.darryncampbell.appactionsdemo.SCAN"
         const val PROFILE_INTENT_START_ACTIVITY = "0"
         const val SCAN_HISTORY_FILE_NAME = "ScanHistory"
@@ -55,6 +56,11 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
     @SuppressLint("SimpleDateFormat")
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        val b = intent.extras
+        Log.v(LOG_TAG, intent.action.toString())
+        for (key in b!!.keySet()) {
+            Log.v(LOG_TAG, key)
+        }
         //  DataWedge intents received here
         if (intent.hasExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)) {
             //  Handle scan intent received from DataWedge, add it to the list of scans
@@ -65,6 +71,14 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
             val dateTimeString = df.format(date)
             val currentScan = Scan(scanData, symbology, dateTimeString)
             scans.add(0, currentScan)
+        }
+        else if (intent.hasExtra("actions.fulfillment.extra.ACTION_TOKEN"))
+        {
+            //  Fulfilled Intent from App Actions
+            val token = intent.getStringExtra("actions.fulfillment.extra.ACTION_TOKEN").toString()
+            Log.d(LOG_TAG, token)
+            dwInterface.sendCommandString(applicationContext, DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN,
+                "START_SCANNING")
         }
         adapter.notifyDataSetChanged()
 
@@ -154,7 +168,10 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
         val appConfig = Bundle()
         appConfig.putString("PACKAGE_NAME", packageName)      //  Associate the profile with this app
         appConfig.putStringArray("ACTIVITY_LIST", arrayOf("*"))
-        profileConfig.putParcelableArray("APP_LIST", arrayOf(appConfig))
+        val appConfigAssistant = Bundle()
+        appConfigAssistant.putString("PACKAGE_NAME", "com.google.android.googlequicksearchbox")      //  Associate the profile with the Google assistant
+        appConfigAssistant.putStringArray("ACTIVITY_LIST", arrayOf("*"))
+        profileConfig.putParcelableArray("APP_LIST", arrayOf(appConfig, appConfigAssistant))
         dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, profileConfig)
         //  You can only configure one plugin at a time in some versions of DW, now do the intent output
         profileConfig.remove("PLUGIN_CONFIG")

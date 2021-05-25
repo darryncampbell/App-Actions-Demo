@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a sample shortcuts.xml -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <capability android:name="actions.intent.GET_BARCODE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.darryncampbell.appactionsdemo"
+            android:targetClass="com.darryncampbell.appactionsdemo.MainActivity">
+        </intent>
+    </capability>
+</shortcuts>

@@ -1,4 +1,4 @@
-package com.darryncampbell.datawedgekotlin
+package com.darryncampbell.appactionsdemo
 
 import android.content.BroadcastReceiver
 import android.content.Context
