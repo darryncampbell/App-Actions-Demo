@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- This is a sample shortcuts.xml -->
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--  Built in Intent -->
     <capability android:name="actions.intent.GET_BARCODE">
         <intent
             android:action="android.intent.action.VIEW"
@@ -8,4 +12,37 @@
             android:targetClass="com.darryncampbell.appactionsdemo.MainActivity">
         </intent>
     </capability>
+
+    <!--  Custom Intent -->
+    <capability
+        android:name="custom.actions.intent.STOCK_AVAILABILITY"
+        app:queryPatterns="@array/StockAvailabilityQueries">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.darryncampbell.appactionsdemo"
+            android:targetClass="com.darryncampbell.appactionsdemo.MainActivity">
+            <parameter
+                android:name="store_location"
+                android:key="store_location"
+                android:mimeType="https://schema.org/Text" />
+        </intent>
+    </capability>
+
+    <shortcut
+        android:shortcutId="PRICE_LOOKUP"
+        android:shortcutShortLabel="@string/pluShort">
+        <capability-binding android:key="actions.intent.GET_BARCODE">
+        </capability-binding>
+    </shortcut>
+
+    <!--shortcut
+        android:shortcutId="STOCK_AVAILABILITY"
+        android:shortcutShortLabel="@string/stockAvailabilityShort">
+        <capability-binding android:key="custom.actions.intent.STOCK_AVAILABILITY">
+            <parameter-binding
+                android:key="store_location"
+                android:value="@string/storeLocation"/>
+        </capability-binding>
+    </shortcut-->
+
 </shortcuts>

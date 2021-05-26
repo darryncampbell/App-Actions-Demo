@@ -4,4 +4,15 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="scan_button_text">Scan</string>
+    <string name="stockAvailabilityShort">Stock Availability</string>
+    <string name="pluShort">Price Lookup</string>
+    <string name="storeLocation">Store Location</string>
+
+    <string-array name="StockAvailabilityQueries">
+        <item>Lookup stock in $text1</item>
+        <item>Find this item at $text1</item>
+        <item>Stock check for $text1</item>
+        <item>Is this item in stock at $text1</item>
+        <item>Find this item at $text1</item>
+    </string-array>
 </resources>

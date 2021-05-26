@@ -30,9 +30,11 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
     private val receiver = DWReceiver()
     private var initialized = false
     private var version65OrOver = false
+    private var storeLocation = ""
+    private var stockAvailabilityCheck = false
 
     companion object {
-        const val PROFILE_NAME = "DataWedgeAppDemo"
+        const val PROFILE_NAME = "AppActionsDemo"
         const val PROFILE_INTENT_ACTION = "com.darryncampbell.appactionsdemo.SCAN"
         const val PROFILE_INTENT_START_ACTIVITY = "0"
         const val SCAN_HISTORY_FILE_NAME = "ScanHistory"
@@ -51,37 +53,73 @@ class MainActivity : AppCompatActivity(), Observer, View.OnTouchListener {
         intentFilter.addAction(DWInterface.DATAWEDGE_RETURN_ACTION)
         intentFilter.addCategory(DWInterface.DATAWEDGE_RETURN_CATEGORY)
         registerReceiver(receiver, intentFilter)
+
+        handleIntent(intent)
     }
 
     @SuppressLint("SimpleDateFormat")
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val b = intent.extras
+        handleIntent(intent)
+    }
+
+    fun handleIntent(intent: Intent)
+    {
         Log.v(LOG_TAG, intent.action.toString())
-        for (key in b!!.keySet()) {
-            Log.v(LOG_TAG, key)
+        val bundleExtras = intent.extras
+        if (bundleExtras != null) {
+            for (key in bundleExtras.keySet()) {
+                Log.v(LOG_TAG, key)
+            }
         }
-        //  DataWedge intents received here
-        if (intent.hasExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)) {
-            //  Handle scan intent received from DataWedge, add it to the list of scans
-            val scanData = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)
-            val symbology = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE)
-            val date = Calendar.getInstance().time
-            val df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-            val dateTimeString = df.format(date)
-            val currentScan = Scan(scanData, symbology, dateTimeString)
-            scans.add(0, currentScan)
+        if (intent.action.toString().equals("android.intent.action.MAIN"))
+        {
+            return
+        }
+        else if (intent.hasExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)) {
+            //  DataWedge intents received here
+            if (stockAvailabilityCheck)
+            {
+                //  For demo purposes only(!)
+                val date = Calendar.getInstance().time
+                val df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                val dateTimeString = df.format(date)
+                val availabilityLookup = Scan(storeLocation + " stock: " +
+                        Random().nextInt(10), "Stock Availability", dateTimeString)
+                scans.add(0, availabilityLookup)
+                stockAvailabilityCheck = false;
+            }
+            else
+            {
+                //  Handle scan intent received from DataWedge, add it to the list of scans
+                val scanData = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING)
+                val symbology = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE)
+                val date = Calendar.getInstance().time
+                val df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                val dateTimeString = df.format(date)
+                val currentScan = Scan(scanData, symbology, dateTimeString)
+                scans.add(0, currentScan)
+            }
+        }
+        else if (intent.hasExtra("store_location"))
+        {
+            //  STOCK_AVAILABILITY Intent entry point (App Actions)
+            storeLocation = intent.getStringExtra("store_location").toString()
+            Log.d(LOG_TAG, "Looking up stock availability in $storeLocation")
+            stockAvailabilityCheck = true;
+            dwInterface.sendCommandString(applicationContext, DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN,
+                "START_SCANNING")
+
         }
         else if (intent.hasExtra("actions.fulfillment.extra.ACTION_TOKEN"))
         {
-            //  Fulfilled Intent from App Actions
+            //  GET_BARCODE Intent entry point (App Actions)
             val token = intent.getStringExtra("actions.fulfillment.extra.ACTION_TOKEN").toString()
             Log.d(LOG_TAG, token)
             dwInterface.sendCommandString(applicationContext, DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN,
                 "START_SCANNING")
         }
         adapter.notifyDataSetChanged()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
