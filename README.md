@@ -18,6 +18,7 @@ Demo to show how to use App Actions on Zebra Mobile Computers
 - https://developers.google.com/assistant/app/custom-intents#actions.xml
 - https://developers.google.com/assistant/app/in-app-promo-sdk
 - https://codelabs.developers.google.com/codelabs/appactions-beta#0
+- https://www.youtube.com/watch?v=PMinB3VZ9x4
 
 
 Other apps:
