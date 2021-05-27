@@ -11,8 +11,8 @@ import java.util.*
 
 class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    private val dwInterface = DWInterface();
-    private var activeProfile = "";
+    private val dwInterface = DWInterface()
+    private var activeProfile = ""
     private var ean8 = false
     private var ean13 = false
     private var code39 = false
@@ -21,10 +21,10 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
     private var illuminationModeValue = "off"
     private var picklistMode = false
     private var picklistModeValue = "0"
-    private var selected_scanner_index = 0
+    private var selectedScannerIndex = 0
 
     companion object {
-        val SETTINGS_KEY_VERSION = "version"
+        const val SETTINGS_KEY_VERSION = "version"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +32,7 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
         setContentView(R.layout.activity_configuration)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         ObservableObject.instance.addObserver(this)
-        val version65OrOver = getIntent().getBooleanExtra(SETTINGS_KEY_VERSION, false)
+        val version65OrOver = intent.getBooleanExtra(SETTINGS_KEY_VERSION, false)
         if (version65OrOver)
         {
             //  Only enable the ability to control the scanner if the DataWedge version is 6.5 or
@@ -67,7 +67,7 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item?.itemId == android.R.id.home) {
+        return if (item.itemId == android.R.id.home) {
             finish()
             true
         } else {
@@ -78,7 +78,7 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
     override fun update(p0: Observable?, p1: Any?) {
         //  Invoked in response to the DWReceiver broadcast receiver, these are the return values
         //  from DataWedge
-        var receivedIntent = p1 as Intent
+        val receivedIntent = p1 as Intent
         if (receivedIntent.hasExtra(DWInterface.DATAWEDGE_EXTRA_RESULT) &&
                 receivedIntent.hasExtra(DWInterface.DATAWEDGE_EXTRA_COMMAND))
         {
@@ -115,20 +115,20 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
                 @Suppress("UNCHECKED_CAST")
                 val enumeratedScanners =
                         receivedIntent.getSerializableExtra(DWInterface.DATAWEDGE_RETURN_ENUMERATE_SCANNERS) as ArrayList<Bundle>? ?: return
-                val scannerList = Array<String>(enumeratedScanners.size) {""}
-                for (i in 0 until scannerList.size)
+                val scannerList = Array(enumeratedScanners.size) {""}
+                for (i in scannerList.indices)
                 {
-                    val scannerName = enumeratedScanners.get(i).get("SCANNER_NAME") as String
+                    val scannerName = enumeratedScanners[i].get("SCANNER_NAME") as String
                     scannerList[i] = scannerName
                 }
-                val adapter = ArrayAdapter<String>(baseContext, android.R.layout.simple_spinner_item, scannerList)
+                val adapter = ArrayAdapter(baseContext, android.R.layout.simple_spinner_item, scannerList)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner_scanners.setAdapter(adapter)
-                spinner_scanners.setSelection(selected_scanner_index)
+                spinner_scanners.adapter = adapter
+                spinner_scanners.setSelection(selectedScannerIndex)
                 spinner_scanners.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
                     override fun onNothingSelected(p0: AdapterView<*>?) {}
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        selected_scanner_index = p2
+                        selectedScannerIndex = p2
                     }
                 }
             }
@@ -143,29 +143,29 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
             //  DataWedge has sent the current configuration, update the UI switches with the current
             //  values for the configurable items.  Again, for readability, I have kept the bundle
             //  keys as Strings rather than constants.
-            val configurationBundle = receivedIntent.getBundleExtra(DWInterface.DATAWEDGE_RETURN_GET_CONFIG);
+            val configurationBundle = receivedIntent.getBundleExtra(DWInterface.DATAWEDGE_RETURN_GET_CONFIG)
             val pluginConfig = configurationBundle?.getParcelableArrayList<Bundle>("PLUGIN_CONFIG") as ArrayList<Bundle>
-            val barcodeProps = pluginConfig.get(0).getBundle("PARAM_LIST")!!
+            val barcodeProps = pluginConfig[0].getBundle("PARAM_LIST")!!
             val ean8Enabled = barcodeProps.getString("decoder_ean8")
-            if (ean8Enabled != null && ean8Enabled.toLowerCase().equals("true"))
+            if (ean8Enabled != null && ean8Enabled.lowercase() == "true")
                 ean8 = true
             val ean13Enabled = barcodeProps.getString("decoder_ean13")
-            if (ean13Enabled != null && ean13Enabled.toLowerCase().equals("true"))
+            if (ean13Enabled != null && ean13Enabled.lowercase() == "true")
                 ean13 = true
             val code39Enabled = barcodeProps.getString("decoder_code39")
-            if (code39Enabled != null && code39Enabled.toLowerCase().equals("true"))
+            if (code39Enabled != null && code39Enabled.lowercase() == "true")
                 code39 = true
             val code128Enabled = barcodeProps.getString("decoder_code128")
-            if (code128Enabled != null && code128Enabled.toLowerCase().equals("true"))
+            if (code128Enabled != null && code128Enabled.lowercase() == "true")
                 code128 = true
             val illuminationModeEnabled = barcodeProps.getString("illumination_mode")
-            if (illuminationModeEnabled != null && illuminationModeEnabled.toLowerCase().equals("torch"))
+            if (illuminationModeEnabled != null && illuminationModeEnabled.lowercase() == "torch")
             {
                 illuminationMode = true
                 illuminationModeValue = "torch"
             }
             val picklistModeEnabled = barcodeProps.getString("picklist")
-            if (picklistModeEnabled != null && !picklistModeEnabled.toLowerCase().equals("0"))
+            if (picklistModeEnabled != null && picklistModeEnabled.lowercase() != "0")
             {
                 picklistMode = true
                 picklistModeValue = "2"
@@ -247,8 +247,12 @@ class ConfigurationActivity : AppCompatActivity(), Observer, View.OnClickListene
         {
             R.id.btn_switch_scanner ->
             {
+                //  DCC (27/May/21)
+                //  My current TC52 has a problem running this line to switch scanners which is strange, the scanner just does not
+                //  scan after this line - will chase with the team internally but for now, I have removed the switch_scanner
+                //  functionality from the UI
                 dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_SWITCH_SCANNER,
-                        "" + selected_scanner_index, sendResult = true)
+                        "" + selectedScannerIndex.toString() , sendResult = true)
                 //  It seems whenever we change the scanner configuration it re-enables the scanner plugin
                 //  Workaround this by just disabling the scanner input again
                 dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_SET_SCANNER_INPUT, DWInterface.DATAWEDGE_SEND_SET_SCANNER_INPUT_DISABLE)

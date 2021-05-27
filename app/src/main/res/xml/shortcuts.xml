@@ -23,8 +23,7 @@
             android:targetClass="com.darryncampbell.appactionsdemo.MainActivity">
             <parameter
                 android:name="store_location"
-                android:key="store_location"
-                android:mimeType="https://schema.org/Text" />
+                android:key="store_location" />
         </intent>
     </capability>
 
@@ -35,7 +34,7 @@
         </capability-binding>
     </shortcut>
 
-    <!--shortcut
+    <shortcut
         android:shortcutId="STOCK_AVAILABILITY"
         android:shortcutShortLabel="@string/stockAvailabilityShort">
         <capability-binding android:key="custom.actions.intent.STOCK_AVAILABILITY">
@@ -43,6 +42,6 @@
                 android:key="store_location"
                 android:value="@string/storeLocation"/>
         </capability-binding>
-    </shortcut-->
+    </shortcut>
 
 </shortcuts>
