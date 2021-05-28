@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.darryncampbell.appactionsdemo">
-
+    <queries>
+        <package android:name="com.google.android.googlequicksearchbox" />
+    </queries>
+    
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
