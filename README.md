@@ -4,9 +4,17 @@
 # App Actions Demo using the Android Shortcuts framework
 Demo to show how to use App Actions (Shortcuts) on Zebra Mobile Computers
 
-Google IO 2021 announced the beta release of the [App Actions](https://developers.google.com/assistant/app/overview) using the Android [Shortcuts framework](https://developer.android.com/guide/topics/ui/shortcuts).  This is an enhancement to the existing [Google Assistant integration](https://developers.google.com/assistant/app/legacy/build-overview) that used [actions.xml](https://developers.google.com/assistant/app/legacy/action-schema).  The announcement centred around using [Built-in Intents](https://developers.google.com/assistant/app/reference/built-in-intents/bii-index), first introduced in 2020 and the new [Custom Intents](https://developers.google.com/assistant/app/custom-intents).  Things honestly got a bit confusing, especially when the official "[fitness tracker](https://github.com/actions-on-google/appactions-fitness-kotlin)" sample app had not received an update in nearly a year.
+Google IO 2021 announced the **beta** release of the [App Actions](https://developers.google.com/assistant/app/overview) using the Android [Shortcuts framework](https://developer.android.com/guide/topics/ui/shortcuts).  This is an enhancement to the existing [Google Assistant integration](https://developers.google.com/assistant/app/legacy/build-overview) that used [actions.xml](https://developers.google.com/assistant/app/legacy/action-schema).  The announcement centred around using [Built-in Intents](https://developers.google.com/assistant/app/reference/built-in-intents/bii-index), first introduced in 2020 and the new [Custom Intents](https://developers.google.com/assistant/app/custom-intents).  Be aware however that the official "[fitness tracker](https://github.com/actions-on-google/appactions-fitness-kotlin)" sample app for app actions has not received an update in nearly a year.
 
-I noticed that one of the built-in Intents was "[Get Barcode](https://developers.google.com/assistant/app/reference/built-in-intents/common/get-barcode)" so I thought it made sense to experiment with App Actions on a Zebra device, especially since the IO announcement included one of our major retail customers.  I have previously written about how you can [add voice recognition to your app](https://github.com/darryncampbell/RetailAssistant) using Google DialogFlow, [using DataWedge](https://github.com/darryncampbell/DataWedge-VoiceRecognition-Sample) and upgrading to [V2 of the DialogFlow engine](https://github.com/darryncampbell/AndroidV2DialogFlow).  App Actions appear to achieve the same use cases (responding to user requests) without integrating with a backend server. 
+I noticed that one of the built-in Intents was "[Get Barcode](https://developers.google.com/assistant/app/reference/built-in-intents/common/get-barcode)" so I thought it made sense to experiment with App Actions on a Zebra device, especially since the IO announcement included one of our major retail customers.  
+
+I have previously written about:
+
+- How you can [add voice recognition to your app](https://github.com/darryncampbell/RetailAssistant) using Google DialogFlow
+- [Using DataWedge](https://github.com/darryncampbell/DataWedge-VoiceRecognition-Sample) to respond to voice commands offline and 
+- Upgrading to [V2 of the DialogFlow engine](https://github.com/darryncampbell/AndroidV2DialogFlow).  
+
+App Actions appear to achieve the same use cases (responding to user requests) without integrating with a backend server. 
 
 ## Setup
 
@@ -51,7 +59,7 @@ I only defined a single shortcut that would invoke the 'GET BARCODE' capability.
     </capability-binding>
 </shortcut>
 ```
-You also need to point to your `shortcuts.xml` file from your Android manifest
+You also need to point to your `shortcuts.xml` file in your Android manifest
 
 ```xml
 <meta-data
@@ -68,7 +76,8 @@ fun handleIntent(intent: Intent)
     else if (intent.hasExtra("actions.fulfillment.extra.ACTION_TOKEN"))
     {
         //  GET_BARCODE Intent entry point (App Actions)
-        dwInterface.sendCommandString(applicationContext, DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN, "START_SCANNING")
+        dwInterface.sendCommandString(applicationContext, 
+            DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN, "START_SCANNING")
     }
 }
 ```
@@ -95,15 +104,17 @@ The 'GET BARCODE' functionality can now be tested.  Google recommends using the 
 
 [![Video Demo](https://img.youtube.com/vi/O22BUzpJzwg/0.jpg)](https://www.youtube.com/watch?v=O22BUzpJzwg)
 
-Ideally, I would like to show you this running a real device and respoding to a real voice activation, "OK Google, Scan a Barcode with the App Actions Demo".  On-device testing with the Assistant is not as simple and the app must first be approved according to the [Play Store Policy Asssitant review process](https://developers.google.com/assistant/app/get-started#request-review).
+Ideally, I would like to show this running on a real device and responding to a real voice activation, "OK Google, Scan a Barcode with the App Actions Demo".  On-device testing with the Assistant is not that simple and the app must first be approved according to the [Play Store Policy Asssitant review process](https://developers.google.com/assistant/app/get-started#request-review).
 
-A few things to bear in mind:
+A few things to bear in mind when publishing your app:
 
 - When you upload your application you will to define a privacy policy and accept the Google Actions terms & conditions under the advanced settings.
 - In my experience, this review process is manual.  Obviously manual review processes take longer and demo apps are less likely to be approved.
 - The review process for Assistant actions does not hold up the overall review process for the app. 
 
-The way the sample app is written, a scan with the hardware trigger is indistinguishable from a scan invoked with 'GET BARCODE'
+### Using the sample app:
+
+The way the sample app is written, a scan with the hardware trigger is indistinguishable from a scan invoked with 'GET BARCODE' voice capability
 
 ![Application](https://raw.githubusercontent.com/darryncampbell/App-Actions-Demo/main/media/device01.png)
 
@@ -170,7 +181,8 @@ fun handleIntent(intent: Intent)
         storeLocation = intent.getStringExtra("store_location").toString()
         Log.d(LOG_TAG, "Looking up stock availability in $storeLocation")
         stockAvailabilityCheck = true;
-        dwInterface.sendCommandString(applicationContext, DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN, "START_SCANNING")
+        dwInterface.sendCommandString(applicationContext, 
+            DWInterface.DATAWEDGE_SEND_SET_SOFT_SCAN, "START_SCANNING")
     }
 }
 ```
@@ -188,7 +200,8 @@ fun handleIntent(intent: Intent)
             val date = Calendar.getInstance().time
             val df = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
             val dateTimeString = df.format(date)
-            val availabilityLookup = Scan(storeLocation + " stock: " + Random().nextInt(10), "Stock Availability", dateTimeString)
+            val availabilityLookup = Scan(storeLocation + " stock: " + Random().nextInt(10), 
+                "Stock Availability", dateTimeString)
             scans.add(0, availabilityLookup)
             stockAvailabilityCheck = false;
         }
