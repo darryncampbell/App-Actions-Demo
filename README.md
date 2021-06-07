@@ -108,7 +108,7 @@ Ideally, I would like to show this running on a real device and responding to a 
 
 A few things to bear in mind when publishing your app:
 
-- When you upload your application you will to define a privacy policy and accept the Google Actions terms & conditions under the advanced settings.
+- When you upload your application you will need to define a privacy policy and accept the Google Actions terms & conditions under the advanced settings.
 - In my experience, this review process is manual.  Obviously manual review processes take longer and demo apps are less likely to be approved.
 - The review process for Assistant actions does not hold up the overall review process for the app. 
 
