@@ -219,7 +219,7 @@ I mentioned previously that to show App Actions running in response to a real in
 
 The limitation of not being able to test with the real Google Assistant is even more evident for custom Intents because you want to test the effectiveness of the model Google created from your specified `queryPackages`, but to do that you need to install the (reviewed) app from the app store.  Also, the Android Studio plugin appears to test the `<capability/>`, not the `<shortcut/>` from your `shortcuts.xml` file.
 
-Google also provides the user with the requirement to manually enable your voice shortcut.  You can suggest these shortcuts to your users using the [In-App Promo SDK](https://developers.google.com/assistant/app/in-app-promo-sdk) but it would require manual intervention from the user to enable your shortcut.
+Google also requires the user manually enable your voice shortcut.  You can suggest these shortcuts to your users using the [In-App Promo SDK](https://developers.google.com/assistant/app/in-app-promo-sdk) but it would require manual intervention from the user to enable your shortcut.
 
 The dialog shown to the user looks similar to what is shown below:
 
@@ -228,7 +228,7 @@ The dialog shown to the user looks similar to what is shown below:
 ## Conclusions
 The App Actions feature is interesting and potentially powerful but I would not personally recommend it to any Enterprise app developers today.
 
-The required integration with Google Assistant and manual approval of shortcuts would not work on a shared, dedicated enterprise device.  I am unsure whether App Actions would work with Android Enterprise Google accounts, though I suspect the dependency on the Google Assistant would preclude that.
+The required integration with Google Assistant and manual approval of shortcuts would not work on a shared, dedicated enterprise device.  I am unsure whether App Actions would work with Android Enterprise Google accounts.
 
 There would be definite advantages to using App Actions in the enterprise, notably the ability to harness natural language processing on-device through a simple and approachable API is compelling but the technology is today definitely focused on consumer end users.  If you are looking for on-device speech recognition today, I would probably direct my customers towards the [DataWedge Voice Input feature](https://developer.zebra.com/blog/giving-context-speech-datawedge-and-voice-input) 
 
